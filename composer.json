@@ -1,0 +1,21 @@
+{
+    "name": "mohammadreza/todo-expert",
+    "description": "a task manage project",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Mohammadreza\\TodoExpert\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "MohammadReza Salehi",
+            "email": "mo.salehi1387p@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "hekmatinasser/verta": "^8.4"
+    }
+}
