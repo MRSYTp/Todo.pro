@@ -1,0 +1,22 @@
+.main .nav .menu ul li a {
+    text-decoration: none;
+    color: #0c7388;
+}
+.main .nav .menu ul li.active a  {
+    color: #79BC46;
+}
+.trash {
+    font-size: 13px;
+    float: right;
+}
+.trash:hover{
+    color: #ca0404;
+}
+.clickable:hover{
+    cursor: pointer;
+    opacity: 0.7;
+}
+.task-time{
+    font-size: 13px;
+    margin-right: 13px;
+}
