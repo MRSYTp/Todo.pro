@@ -1,4 +1,5 @@
 <?php 
+session_start();
 include "constants.php";
 include TODO_PATH ."bootstrap/config.php";
 include TODO_PATH ."libs/helpers.php";
@@ -16,3 +17,4 @@ try {
 
 
 include TODO_PATH ."libs/lib_functions.php";
+include TODO_PATH ."libs/lib-auth.php";

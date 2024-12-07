@@ -7,7 +7,8 @@ if(!defined('TODO_PATH')){
 # folder fonctions
 function getFolders(){
     global $conn;
-    $query = "SELECT * FROM folders";
+    $userID = getCurrentUserId();
+    $query = "SELECT * FROM folders WHERE user_id = $userID";
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $folders = $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -26,21 +27,23 @@ function deleteFolder($folder_id){
 
 function addFolder($folder_name){
     global $conn;
+    $userID = getCurrentUserId();
     $query = "INSERT INTO folders (name,user_id) VALUES (:folder_name,:user_id)";
     $stmt = $conn->prepare($query);
-    $stmt->execute([':folder_name'=>$folder_name,':user_id' => 1]);
+    $stmt->execute([':folder_name'=>$folder_name,':user_id' => $userID]);
     return $conn->lastInsertId();
 }
 # task functions 
 
 function getTasks(){
     global $conn;
+    $userID = getCurrentUserId();
     $folder_id = $_GET['folder_id'] ?? null;
     $conditionfile = '';
     if(isset($folder_id) && is_numeric($folder_id)){
         $conditionfile = "and folder_id=$folder_id";
     }
-    $query = "SELECT * FROM tasks WHERE user_id=1  $conditionfile";
+    $query = "SELECT * FROM tasks WHERE user_id=$userID  $conditionfile";
     $stmt = $conn->prepare($query);
     $stmt->execute();
     $tasks = $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -57,9 +60,10 @@ function deleteTask($task_id){
 
 function addTask($title,$folder_id){
     global $conn;
+    $userID = getCurrentUserId();
     $query = "INSERT INTO tasks (user_id,folder_id,title) VALUES (:user_id,:folder_id,:title)";
     $stmt = $conn->prepare($query);
-    $stmt->execute([':folder_id'=>$folder_id,':user_id' => 1,":title" => $title]);
+    $stmt->execute([':folder_id'=>$folder_id,':user_id' => $userID,":title" => $title]);
     return $conn->lastInsertId();
 }
 
@@ -83,9 +87,10 @@ function tiggleStatusTask($statusTask){
 
 function updateTaskStatus($taskid,$taskstatus){
     global $conn;
+    $userID = getCurrentUserId();
     $query = "UPDATE tasks SET status = :statustask WHERE id = :task_id AND user_id = :user";
     $stmt = $conn->prepare($query);
-    $stmt->execute([':statustask'=>$taskstatus,':user' => 1,":task_id" => $taskid]);
+    $stmt->execute([':statustask'=>$taskstatus,':user' => $userID,":task_id" => $taskid]);
     return $taskstatus;
 }
 

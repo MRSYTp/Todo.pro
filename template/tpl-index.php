@@ -2,16 +2,30 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8">
-  <title>Task manager UI</title>
+  <title>TODO PRO</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/custom.css">
+  <style>
+    html {
+    background-image: url('assets/img/bg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #F0F4F5;
+}
+  </style>
 </head>
 <body>
 <!-- partial:index.partial.html -->
 <div class="page">
   <div class="pageHeader">
-    <div class="title">Dashboard</div>
-    <div class="userPanel"><i class="fa fa-chevron-down"></i><span class="username">John Doe </span></div>
+    <div class="title">Todo Pro</div>
+    <div class="userPanel">
+      <a style="color: #ffffff;font-size: 17px;" href="<?= site_url("?logout=true")?>">
+        <i class="fa fa-sign-out"></i>
+      </a>
+      <span class="username"><?= getUserData()->name; ?></span>
+    </div>
   </div>
   <div class="main">
     <div class="nav">
@@ -34,7 +48,7 @@
               <a href="?folder_id=<?= $folder->id ?>" style="text-decoration: none;">
                 <i class="<?= (isset($_GET['folder_id']) && $_GET['folder_id'] == $folder->id) ? 'fa fa-folder-open' : 'fa fa-folder' ;?>"></i><?= $folder->name ?>
               </a>
-              <a href="?delete_folder=<?= $folder->id ?>" class="trash" onclick="return confirm('Are You Sure to delete this Item?\n<?=$folder->name?>');">
+              <a  href="?delete_folder=<?= $folder->id ?>" class="trash" onclick="return confirm('Are You Sure to delete this Item?\n<?=$folder->name?>');">
                 <i class="fa fa-trash-o trash"></i>
               </a>
 
@@ -52,10 +66,10 @@
       <div class="title" style="width: 50%;">
         <input type="text" id="taskNameInput" style="width: 100%;margin-left:3%;line-height: 30px;" placeholder="Add New Task">
         </div>
-        <div class="functions">
-          <div class="button active">Add New Task</div>
-          <div class="button">Completed</div>
-          <div class="button inverz"><i class="fa fa-trash-o"></i></div>
+        <div class="functions"style="width: 50%;">
+          <div class="button" style="background-color: #ffffff;"><input type="time" style="width: 100%;margin-left:3%;line-height: 30px;"></div>
+          <div class="button " style="background-color: #ffffff;"><input type="date" style="width: 100%;margin-left:3%;line-height: 30px;"></div>
+          <div class="button inverz"><i class="fa fa-clock-o"></i></div>
         </div>
       </div>
       <div class="content">
@@ -68,8 +82,8 @@
               <i id="tiggleDone" data-taskstatus="<?= $task->status ?>" data-taskid="<?= $task->id ?>" class="clickable <?= $task->status == "complete" ? "fa fa-check-square-o" : "fa fa-square-o" ;?>"></i>
               <span><?= $task->title;?></span>
               <div class="info">
-                <span class="task-time"><?= $task->task_time; ?></span>
-                <a href="?delete_task=<?= $task->id ?>" class="trash" onclick="return confirm('Are You Sure to delete this Item?\n<?=$task->title?>');">
+                <span class="task-time"><?= $task->task_time == "0000-00-00 00:00:00" ? "Unknwon" : $task->task_time; ?></span>
+                <a style="color: #a3a4a3;" href="?delete_task=<?= $task->id ?>" class="trash" onclick="return confirm('Are You Sure to delete this Item?\n<?=$task->title?>');">
                 <i class="fa fa-trash-o trash"></i>
                 </a>
               </div>
@@ -81,7 +95,7 @@
 
           </ul>
         </div>
-        <div class="list">
+        <!-- <div class="list">
           <div class="title">Tomorrow</div>
           <ul>
           <li><i class="fa fa-square-o"></i><span>Design a new logo</span>
@@ -96,7 +110,7 @@
               <div class="info"></div>
             </li>
           </ul>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
