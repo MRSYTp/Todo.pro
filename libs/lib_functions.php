@@ -4,7 +4,9 @@ if(!defined('TODO_PATH')){
     die();
 }
 
-# folder fonctions
+# folder fonctions :
+
+
 function getFolders(){
     global $conn;
     $userID = getCurrentUserId();
@@ -33,7 +35,10 @@ function addFolder($folder_name){
     $stmt->execute([':folder_name'=>$folder_name,':user_id' => $userID]);
     return $conn->lastInsertId();
 }
-# task functions 
+
+
+# task functions :
+
 
 function getTasks(){
     global $conn;
@@ -50,6 +55,8 @@ function getTasks(){
     return $tasks;
 }
 
+
+
 function deleteTask($task_id){
     global $conn;
     $query = "DELETE FROM tasks WHERE id=$task_id";
@@ -58,31 +65,31 @@ function deleteTask($task_id){
 }
 
 
-function addTask($title,$folder_id){
+
+function fixTaskTime($time, $date) {
+
+    if (!empty($date) && !empty($time)) {
+
+        $datetime = $date . ' ' . $time . ':00'; // اضافه کردن ثانیه 00
+
+        return $datetime;
+
+    } else {
+        return null;
+    }
+}
+
+
+function addTask($title,$folder_id,$taskTime){
     global $conn;
     $userID = getCurrentUserId();
-    $query = "INSERT INTO tasks (user_id,folder_id,title) VALUES (:user_id,:folder_id,:title)";
+    $query = "INSERT INTO tasks (user_id,folder_id,title,task_time) VALUES (:user_id,:folder_id,:title,:Ttime)";
     $stmt = $conn->prepare($query);
-    $stmt->execute([':folder_id'=>$folder_id,':user_id' => $userID,":title" => $title]);
+    $stmt->execute([':folder_id'=>$folder_id,':user_id' => $userID,":title" => $title,":Ttime" => $taskTime]);
     return $conn->lastInsertId();
 }
 
-function tiggleStatusTask($statusTask){
-    $status = $statusTask;
-    switch ($status) {
-        case 'in-progress':
-            $status = "complete";
-        break;
-        case 'complete':
-            $status = "in-progress";
-        break;
-        
-        default:
-            $status = "in-progress";
-            break;
-    }
-    return $status;
-}
+
 
 
 function updateTaskStatus($taskid,$taskstatus){
@@ -94,3 +101,99 @@ function updateTaskStatus($taskid,$taskstatus){
     return $taskstatus;
 }
 
+
+function checkFieldTask($task){
+
+    date_default_timezone_set('Asia/Tehran');
+    $currentTime = date('Y-m-d H:i:s');
+    $currentTimestamp = strtotime($currentTime);
+    // return $tasks;
+    if ($task->status == "in-progress") {
+        if ($task->task_time != "0000-00-00 00:00:00") {
+            $timestampTask = strtotime($task->task_time);
+            
+            if ($timestampTask < $currentTimestamp) {
+
+                $result = setStatusFailed($task->id);
+
+            }else{
+                return "monde hano";
+            }
+        }else {
+            return "not set time!";
+        }
+    }
+
+
+}
+
+
+function setStatusFailed($taskID){
+    global $conn;
+    $userID = getCurrentUserId();
+    $query = "UPDATE tasks SET status = :statustask WHERE id = :task_id AND user_id = :user";
+    $stmt = $conn->prepare($query);
+    $stmt->execute([':statustask'=> "failed",':user' => $userID,":task_id" => $taskID]);
+    return $stmt->rowCount();
+}
+
+
+
+#switch func :
+
+    function tiggleStatusTask($statusTask){
+        $status = $statusTask;
+        switch ($status) {
+            case 'in-progress':
+                $status = "complete";
+            break;
+            case 'complete':
+                $status = "in-progress";
+            break;
+            
+            default:
+                $status = "failed";
+                break;
+        }
+        return $status;
+    }
+
+    
+    function liSwtcherClass($statusTask){
+        $status = $statusTask;
+        switch ($status) {
+            case 'in-progress':
+                $status = "";
+            break;
+            case 'complete':
+                $status = "checked";
+            break;
+            case 'failed':
+                $status = "failed-class";
+            break;
+            
+            default:
+                $status = "";
+                break;
+        }
+        return $status;
+    }
+    function iconSwtcher($statusTask){
+        $status = $statusTask;
+        switch ($status) {
+            case 'in-progress':
+                $status = "clickable fa fa-square-o";
+            break;
+            case 'complete':
+                $status = "clickable fa fa-check-square-o";
+            break;
+            case 'failed':
+                $status = "fa fa-lock";
+            break;
+            
+            default:
+                $status = "";
+                break;
+        }
+        return $status;
+    }

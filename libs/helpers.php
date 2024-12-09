@@ -35,3 +35,19 @@ function site_url($ur = ''){
 function message($msg,$cssClass = 'info'){
     echo "<div class='$cssClass' style='padding: 20px; width: 80%; margin: 10px auto; background: #f9dede; border: 1px solid #cca4a4; color: #521717; border-radius: 5px; font-family: sans-serif;'>$msg</div>";
 }
+function showErrorMessage($message) {
+    echo "
+    <div class='error-message'>
+        $message
+    </div>
+    ";
+}
+
+function showSuccessMessage($message) {
+    echo "
+    <div class='success-message'>
+        $message
+    </div>
+    ";
+}
+

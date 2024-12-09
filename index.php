@@ -19,6 +19,12 @@ if(isLoggedIn()){
         deleteTask($_GET["delete_task"]);
         
     }
+    
+    $getForCheckTask = getTasks();
+    foreach($getForCheckTask as $task){
+        checkFieldTask($task);
+    }
+    
     $folders = getFolders();
     $tasks = getTasks();
     

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>TODO PRO</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/custom.css">
+  <link rel="stylesheet" href="<?=  site_url('assets/css/style.css'); ?>">
+  <link rel="stylesheet" href="<?=  site_url('assets/css/custom.css'); ?>">
   <style>
     html {
     background-image: url('assets/img/bg.png');
@@ -12,7 +12,13 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     color: #F0F4F5;
-}
+    }
+  .failed-class{
+    text-decoration: line-through;
+    background-color: #ffd8d8;
+
+
+    }
   </style>
 </head>
 <body>
@@ -58,7 +64,7 @@
       </div>
       <div>
         <input type="text" id="addFolderInput" style='width: 65%;margin-left:3%' placeholder="Add New Folder"/>
-        <button id="addFolderBtn" class="btn clickable">+</button>
+        <button id="addFolderBtn" class="btn clickable"><i class="fa fa-plus-circle"></i></button>
       </div>
     </div>
     <div class="view">
@@ -67,9 +73,8 @@
         <input type="text" id="taskNameInput" style="width: 100%;margin-left:3%;line-height: 30px;" placeholder="Add New Task">
         </div>
         <div class="functions"style="width: 50%;">
-          <div class="button" style="background-color: #ffffff;"><input type="time" style="width: 100%;margin-left:3%;line-height: 30px;"></div>
-          <div class="button " style="background-color: #ffffff;"><input type="date" style="width: 100%;margin-left:3%;line-height: 30px;"></div>
-          <div class="button inverz"><i class="fa fa-clock-o"></i></div>
+          <div class="button" style="background-color: #ffffff;"><input type="time" id="time-input" style="width: 100%;margin-left:3%;line-height: 30px;"></div>
+          <div class="button " style="background-color: #ffffff;"><input type="date"id="date-input"  style="width: 100%;margin-left:3%;line-height: 30px;"></div>
         </div>
       </div>
       <div class="content">
@@ -78,11 +83,12 @@
           <ul class="task-list">
             <?php if(sizeof($tasks)):?>
           <?php foreach($tasks as $task): ?>
-            <li class="<?= $task->status == "complete" ? "checked" : "" ;?>">
-              <i id="tiggleDone" data-taskstatus="<?= $task->status ?>" data-taskid="<?= $task->id ?>" class="clickable <?= $task->status == "complete" ? "fa fa-check-square-o" : "fa fa-square-o" ;?>"></i>
+            
+            <li class="<?= liSwtcherClass($task->status); ?>">
+              <i id="tiggleDone" data-taskstatus="<?= $task->status ?>" data-taskid="<?= $task->id ?>" class="<?= iconSwtcher($task->status); ?>"></i>
               <span><?= $task->title;?></span>
               <div class="info">
-                <span class="task-time"><?= $task->task_time == "0000-00-00 00:00:00" ? "Unknwon" : $task->task_time; ?></span>
+                <span class="task-time"><?= $task->task_time == "0000-00-00 00:00:00" ? "NOT SET" : $task->task_time; ?></span>
                 <a style="color: #a3a4a3;" href="?delete_task=<?= $task->id ?>" class="trash" onclick="return confirm('Are You Sure to delete this Item?\n<?=$task->title?>');">
                 <i class="fa fa-trash-o trash"></i>
                 </a>
@@ -116,90 +122,25 @@
   </div>
 </div>
 <!-- partial -->
-  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script><script  src="assets/js/script.js"></script>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script><script  src="http://localhost/todo-expert/assets/js/script.js"></script>
   <script>
   $(document).ready(function(){
-    
-            $("i#tiggleDone").click(function (e) {
-            e.preventDefault();
 
-            // دریافت مقادیر در هنگام کلیک
-            var $icon = $(this);
-            var tid = $icon.attr("data-taskid");
-            var taskStatus = $icon.attr("data-taskstatus");
-
-            // ارسال درخواست AJAX
-            $.ajax({
-                url: "process/ajax_Handler.php",
-                method: "POST",
-                data: {
-                    "action": "task_complete",
-                    "taskid": tid,
-                    "status": taskStatus
-                },
-                success: function (response) {
-                    // بررسی پاسخ و اعمال تغییرات
-                    if (response.trim() === "complete") {
-                        // تغییر وضعیت به "complete"
-                        $icon
-                            .attr("data-taskstatus", "complete")
-                            .removeClass("fa-square-o")
-                            .addClass("fa-check-square-o");
-
-                        $icon.closest("li")
-                            .addClass("checked");
-                    } else if (response.trim() === "in-progress") {
-                        // تغییر وضعیت به "progress"
-                        $icon
-                            .attr("data-taskstatus", "in-progress")
-                            .removeClass("fa-check-square-o")
-                            .addClass("fa-square-o");
-
-                        $icon.closest("li")
-                            .removeClass("checked");
-                    } else {
-                        alert("Unexpected response: " + response);
-                    }
-                },
-                error: function () {
-                    alert("An error occurred while processing the request.");
-                }
-            });
-        });
-
-
-      var input = $("input#addFolderInput");
-      $("#addFolderBtn").click(function(e){
-          $.ajax({
-            url : "process/ajax_Handler.php",
-            method : "POST", 
-            data : {"action" : "add_folder" , "name" : input.val()},
-            success : function(response){
-              if (response > 0) {
-                const folderId = response; 
-                const folderName = input ? input.val() : "Unnamed Folder";
-                const listItem = `
-                    <li>
-                        <a href="?folder_id=${folderId}" style="text-decoration: none; color: #1f6674;">
-                            <i class="fa fa-folder"></i> ${folderName}
-                        </a>
-                        <a href="?delete_folder=${folderId}" class="trash">
-                            <i class="fa fa-trash-o trash"></i>
-                        </a>
-                    </li>`;
-                $(listItem).appendTo("ul.folder-list");
-              }
-            } 
-          });
-      });
-
-        $('input#taskNameInput').keypress(function(e) {
+    $('input#taskNameInput').keypress(function(e) {
       if (e.which == 13) {
           const taskTitle = $('input#taskNameInput').val().trim();
+          const taskTime = $('input#time-input').val().trim();
+          const taskDate = $('input#date-input').val().trim();
           if (taskTitle === "") {
               alert("لطفاً یک نام وارد کنید.");
               return;
           }
+        let dateTime = null;
+        if (taskDate && taskTime) {
+            dateTime = `${taskDate} ${taskTime}:00`;
+        }else {
+            dateTime = "N/A"; // مقدار پیش‌فرض
+        }
 
           $.ajax({
               url: "process/ajax_Handler.php",
@@ -207,26 +148,30 @@
               data: {
                   "action": "add_task",
                   "title": taskTitle,
-                  "folder_id": <?= $_GET['folder_id'] ?? 0 ?>
+                  "folder_id": <?= $_GET['folder_id'] ?? 0 ?>,
+                  "task_time" : taskTime,
+                  "task_date" : taskDate
               },
               success: function(response) {
+              
                   if (!isNaN(response) && response > 0) {
                       const taskId = response;
                       const sanitizedTitle = $('<div>').text(taskTitle).html();
+                      const sanitizedDateTime = $('<div>').text(dateTime).html();
                       const taskItem = `
-                          <li>
-                              <i class="clickable fa fa-square-o"></i>
-                              <span>${sanitizedTitle}</span>
-                              <div class="info">
-                                  <span class="task-time">تایم مشخص نشده</span>
-                                  <a href="?delete_task=${taskId}" class="trash" onclick="return confirm('آیا از حذف این وظیفه مطمئن هستید؟\n${sanitizedTitle}');">
-                                      <i class="fa fa-trash-o trash"></i>
-                                  </a>
-                              </div>
-                          </li>`;
+                        <li>
+                            <i class="clickable fa fa-square-o"></i>
+                            <span>${sanitizedTitle}</span>
+                            <div class="info">
+                                <span class="task-time">${sanitizedDateTime}</span>
+                                <a style="color: #a3a4a3;" href="?delete_task=${taskId}" class="trash" onclick="return confirm('آیا از حذف این وظیفه مطمئن هستید؟\n${sanitizedTitle}');">
+                                    <i class="fa fa-trash-o trash"></i>
+                                </a>
+                            </div>
+                        </li>`;
                       $(taskItem).appendTo("ul.task-list");
                   } else {
-                      alert("مشکلی پیش آمد. لطفاً دوباره تلاش کنید.");
+                      alert(response);
                   }
               }
           });

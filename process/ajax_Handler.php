@@ -20,9 +20,22 @@ switch($_POST["action"]){
 
 
             if(isset($_POST["title"]) && !empty($_POST["title"])){
+                
+                $time = fixTaskTime($_POST["task_time"],$_POST["task_date"]);
 
-                echo addTask($_POST["title"],$_POST['folder_id']);
+                    if(!is_null($time)){
+
+                        echo addTask($_POST["title"],$_POST['folder_id'],$time);
+
+                    }else{
+
+                        $emptyTime = "0000-00-00 00:00:00";
+                        echo addTask($_POST["title"],$_POST['folder_id'],$emptyTime);
+                    }
+                
             }
+        }else{
+            echo "فولدر مورد نظر را انتخاب کنید";
         }
     break;
     case "task_complete":

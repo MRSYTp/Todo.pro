@@ -19,10 +19,10 @@ function login($email,$pass){
         if (password_verify($pass,$user->password)) {
             $_SESSION["login"] = $user;
         }else{
-            message('password not currect please check password.');
+            showErrorMessage('password not found please check password.');
         }
     }else {
-        message("Error User not found!");
+        showErrorMessage("Error User not found!");
     }
 
 }
@@ -68,9 +68,9 @@ function register($userdata){
     $stmt->execute([':name'=>$userdata['name'],':email' => $userdata['email'],':pass' => $hushpass]);
     $iduser = $conn->lastInsertId();
     if($iduser > 0){
-        message('wellcome '.$userdata["name"].' in TodoPro <br><a href="'.site_url("auth.php").'" style="text-decoration: none;">Login please</a>');
+        showSuccessMessage('wellcome '.$userdata["name"].' in TodoPro <br>Login please');
     }else{
-        message("field to register try again later!");
+        showErrorMessage("field to register try again later!");
     }
 }
 
